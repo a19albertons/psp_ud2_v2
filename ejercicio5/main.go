@@ -9,24 +9,28 @@ import (
 
 func main() {
 	numbers := 20
+	var wg sync.WaitGroup
+	wgworkers := 1
 	var wg1 sync.WaitGroup // Waitgroup for processor stage
 	wg1workers := 3
 	var wg2 sync.WaitGroup // Waitgroup for validator stage
 	wg2workers := 2
-	firstChan := make(chan int, numbers)
-	secondChan := make(chan int, numbers)
-	finalChan := make(chan int, numbers)
+	firstChan := make(chan int)
+	secondChan := make(chan int)
+	finalChan := make(chan int, 20)
 
 	// step 1: Generate stage
-	go func() {
-		defer close(firstChan)
-		for i := 0; i < numbers; i++ {
-			j := i + 1
-			fmt.Println("Generator produced:", j)
-			firstChan <- j
-		}
-
-	}()
+	for i := 0; i < wgworkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for z := 0; z < numbers; z++ {
+				j := z + 1
+				fmt.Println("Generator produced:", j)
+				firstChan <- j
+			}
+		}()
+	}
 
 	// step 2: Generate slaves
 	for i := 0; i < wg1workers; i++ {
@@ -43,8 +47,6 @@ func main() {
 	}
 
 	// step 3: Wait for all slaves from wg1 to finish
-	wg1.Wait()
-	close(secondChan)
 
 	// step 4: Generate validator slaves
 	for i := 0; i < wg2workers; i++ {
@@ -63,6 +65,10 @@ func main() {
 	}
 
 	// step 5: Wait for all slaves from wg2 to finish
+	wg.Wait()
+	close(firstChan)
+	wg1.Wait()
+	close(secondChan)
 	wg2.Wait()
 	close(finalChan)
 

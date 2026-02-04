@@ -63,7 +63,7 @@ func main() {
 				// Lógica de fallo/éxito
 				f := rand.Intn(5)
 				if f == falloExito {
-					fmt.Printf("Worker %d failed URL: %s\n", workerID, url)
+					fmt.Printf("Worker %d failed URL: %s (error timeout)\n", workerID, url)
 					outChan <- false // Enviar fallo
 				} else {
 					fmt.Printf("Worker %d succeeded URL: %s\n", workerID, url)

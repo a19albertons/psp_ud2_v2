@@ -27,8 +27,10 @@ func main() {
 	successfulWithdrawals := 0
 	var succesfulMutex sync.Mutex
 
+	// Simulate concurrent transactions
 	for i := 0; i < workers; i++ {
 		wg.Add(1)
+		// goroutine for each worker logic
 		go func(){
 			defer wg.Done()
 			for i := 0; i < subworkers; i++ {
@@ -64,6 +66,8 @@ func main() {
 	fmt.Printf("Failed Transactions: %d\n", workers*subworkers - account.transactionCount)
 
 }
+
+// This funcion handle deposits, when you add money to the account
 func Deposit(account *BankAccount, amount float64) error {
 	// enable mutex to avoid race conditions
 	account.mutex.Lock()
@@ -83,6 +87,7 @@ func Deposit(account *BankAccount, amount float64) error {
 
 }
 
+// This function handle withdrawals, when you remove money from the account
 func Withdraw(account *BankAccount, amount float64) error {
 	// enable mutex to avoid race conditions
 	account.mutex.Lock()
@@ -108,6 +113,7 @@ func Withdraw(account *BankAccount, amount float64) error {
 
 }
 
+// this function handle balance consults, when you want to know how much money you have in the account
 func GetBalance(account *BankAccount) float64 {
 	account.mutex.Lock()
 	defer account.mutex.Unlock()
@@ -115,6 +121,8 @@ func GetBalance(account *BankAccount) float64 {
 	return account.balance
 }
 
+
+// this functin handle transaction count consults, when you want to know succesful transactions you have made in the account
 func GetTransactionCount(account *BankAccount) int  {
 	account.mutex.Lock()
 	defer account.mutex.Unlock()

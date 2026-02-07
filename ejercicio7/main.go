@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"sync"
+	"time"
 )
 
 type BankAccount struct {
@@ -73,6 +74,9 @@ func Deposit(account *BankAccount, amount float64) error {
 	account.mutex.Lock()
 	defer account.mutex.Unlock()
 
+	// Process time
+	time.Sleep(10 * time.Millisecond) 
+
 	// Increase transaction count
 	account.transactionCount++
 
@@ -92,6 +96,9 @@ func Withdraw(account *BankAccount, amount float64) error {
 	// enable mutex to avoid race conditions
 	account.mutex.Lock()
 	defer account.mutex.Unlock()
+
+	// Process time
+	time.Sleep(10 * time.Millisecond) 
 
 	// Increase transaction count
 	account.transactionCount++
